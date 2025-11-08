@@ -30,7 +30,7 @@ function Liquid({ percent = 0.62 }: { percent?: number }) {
   );
 }
 
-function Jar({ spin = true }: { spin?: boolean }) {
+function Jar({ spin = true, percent = 0.62 }: { spin?: boolean; percent?: number }) {
   const group = useRef<any>(null);
   
   useFrame(() => {
@@ -65,7 +65,7 @@ function Jar({ spin = true }: { spin?: boolean }) {
         <meshStandardMaterial color="#0f172a" roughness={0.8} metalness={0.2} />
       </mesh>
 
-      <Liquid percent={0.62} />
+      <Liquid percent={percent} />
     </group>
   );
 }
@@ -77,7 +77,7 @@ export function SavingsPot3D({ percent = 0.62 }: { percent?: number }) {
         <ambientLight intensity={0.4} />
         <directionalLight position={[4, 6, 4]} intensity={1.2} castShadow />
         <group position={[0, 0, 0]}>
-          <Jar />
+          <Jar spin percent={percent} />
         </group>
         <ContactShadows 
           position={[0, -0.7, 0]} 

@@ -8,6 +8,7 @@ import {
   LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer,
   PieChart, Pie, Cell
 } from "recharts";
+import { SavingsPot3D } from "@/components/SavingsPot3D";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -116,33 +117,43 @@ export default function PrismLanding() {
       <section ref={heroRef} className="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(1200px_600px_at_50%_-10%,rgba(16,185,129,0.16),transparent_60%)]" />
         <div className="mx-auto max-w-[1200px] px-6 pt-24 pb-20">
-          <motion.h1 style={{ x: xHero }} className="text-5xl md:text-7xl font-extrabold leading-[0.95] tracking-tight">
-            Your Money.
-            <span className="block text-emerald-400">Decoded & Rewarded.</span>
-          </motion.h1>
-          <motion.div {...fade} className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-7">
-              <div className="text-xs uppercase tracking-[0.2em] text-white/50">Current Balance</div>
-              <div className="mt-3 text-5xl font-bold tabular-nums">£{BALANCE.toLocaleString()}</div>
-              <div className="mt-2 flex items-center gap-2 text-emerald-400/80"><TrendingUp className="size-4"/>+2.3% this month</div>
-            </Card>
-            <Card className="p-7">
-              <div className="text-xs uppercase tracking-[0.2em] text-white/50">Reward Points</div>
-              <div className="mt-3 text-5xl font-bold tabular-nums">{POINTS.toLocaleString()}</div>
-              <div className="mt-2 flex items-center gap-2 text-sm">
-                <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${currentTier.grad} px-3 py-1 text-black/80 font-semibold`}>{currentTier.name}</span>
-                {ptsToNext > 0 && <span className="text-white/70">{ptsToNext} pts to next</span>}
-              </div>
-            </Card>
-          </motion.div>
-          <motion.div {...fade} className="mt-10 flex flex-wrap items-center gap-3">
-            <a href="#start" className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 font-semibold text-black shadow-lg shadow-emerald-500/25">
-              <Upload className="size-4"/> Upload CSV
-            </a>
-            <a href="#rewards" className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
-              View Rewards <ArrowRight className="size-4"/>
-            </a>
-          </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Headline + KPIs + CTAs */}
+            <div>
+              <motion.h1 style={{ x: xHero }} className="text-5xl md:text-7xl font-extrabold leading-[0.95] tracking-tight">
+                Your Money.
+                <span className="block text-emerald-400">Decoded & Rewarded.</span>
+              </motion.h1>
+              <motion.div {...fade} className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <Card className="p-7">
+                  <div className="text-xs uppercase tracking-[0.2em] text-white/50">Current Balance</div>
+                  <div className="mt-3 text-5xl font-bold tabular-nums">£{BALANCE.toLocaleString()}</div>
+                  <div className="mt-2 flex items-center gap-2 text-emerald-400/80"><TrendingUp className="size-4"/>+2.3% this month</div>
+                </Card>
+                <Card className="p-7">
+                  <div className="text-xs uppercase tracking-[0.2em] text-white/50">Reward Points</div>
+                  <div className="mt-3 text-5xl font-bold tabular-nums">{POINTS.toLocaleString()}</div>
+                  <div className="mt-2 flex items-center gap-2 text-sm">
+                    <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${currentTier.grad} px-3 py-1 text-black/80 font-semibold`}>{currentTier.name}</span>
+                    {ptsToNext > 0 && <span className="text-white/70">{ptsToNext} pts to next</span>}
+                  </div>
+                </Card>
+              </motion.div>
+              <motion.div {...fade} className="mt-10 flex flex-wrap items-center gap-3">
+                <a href="#start" className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 font-semibold text-black shadow-lg shadow-emerald-500/25">
+                  <Upload className="size-4"/> Upload CSV
+                </a>
+                <a href="#rewards" className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
+                  View Rewards <ArrowRight className="size-4"/>
+                </a>
+              </motion.div>
+            </div>
+
+            {/* Right: 3D Savings Pot */}
+            <motion.div {...fade}>
+              <SavingsPot3D percent={BALANCE / 5000} />
+            </motion.div>
+          </div>
         </div>
       </section>
 
