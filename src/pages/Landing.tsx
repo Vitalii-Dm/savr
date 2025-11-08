@@ -93,6 +93,21 @@ export default function PrismLanding() {
   const heroRef = useRef<HTMLDivElement>(null);
   const xHero = useParallax(heroRef);
   const [openRewards, setOpenRewards] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === 'text/csv') {
+      console.log('CSV file selected:', file.name);
+      // TODO: Process CSV file here
+    } else {
+      alert('Please select a valid CSV file');
+    }
+  };
 
   const donutData = useMemo(() => spendBreakdown.map((d, i) => ({ ...d, color: COLORS[i % COLORS.length] })), []);
 
@@ -142,12 +157,9 @@ export default function PrismLanding() {
                 </Card>
               </motion.div>
               <motion.div {...fade} className="mt-10 flex flex-wrap items-center gap-3">
-                <a href="#start" className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 font-semibold text-black shadow-lg shadow-emerald-500/25">
-                  <Upload className="size-4"/> Upload CSV
-                </a>
-                <a href="#rewards" className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
+                <button onClick={() => setOpenRewards(true)} className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
                   View Rewards <ArrowRight className="size-4"/>
-                </a>
+                </button>
               </motion.div>
             </div>
 
@@ -275,8 +287,19 @@ export default function PrismLanding() {
           <Card className="p-10">
             <div className="text-3xl font-bold">Start now.</div>
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              <a className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 font-semibold text-black shadow-lg shadow-emerald-500/25"><Upload className="size-4"/> Upload CSV</a>
-              <a href="#rewards" className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">Explore Rewards <ArrowRight className="size-4"/></a>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <button onClick={handleUploadClick} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 font-semibold text-black shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transition-shadow">
+                <Upload className="size-4"/> Upload CSV
+              </button>
+              <button onClick={() => setOpenRewards(true)} className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
+                Explore Rewards <ArrowRight className="size-4"/>
+              </button>
             </div>
           </Card>
         </div>
