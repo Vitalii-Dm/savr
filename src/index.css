@@ -105,21 +105,37 @@ All colors MUST be HSL.
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
-  /* Tier gradients */
+  /* Tier gradients - Metallic Premium */
   .tier-bronze {
-    background: linear-gradient(135deg, #CD7F32 0%, #B8692C 100%);
+    background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #CD7F32 100%);
   }
   
   .tier-silver {
-    background: linear-gradient(135deg, #E8E8E8 0%, #A0A0A0 100%);
+    background: linear-gradient(135deg, #C0C0C0 0%, #E0E0E0 50%, #C0C0C0 100%);
   }
   
   .tier-gold {
-    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+    background: linear-gradient(135deg, #FFD700 0%, #FFB700 50%, #FFA500 100%);
   }
   
   .tier-platinum {
-    background: linear-gradient(135deg, #E5E4E2 0%, #B8B8B8 100%);
+    background: linear-gradient(135deg, #E6E6FA 0%, #ADD8E6 50%, #E6E6FA 100%);
+  }
+  
+  /* Glassmorphism */
+  .glass-card {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Accent gradients */
+  .bg-gradient-accent {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  }
+  
+  .bg-gradient-hero-premium {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
   }
   
   /* Animations */
@@ -141,6 +157,26 @@ All colors MUST be HSL.
     50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.6); }
   }
   
+  /* Metallic shine animation */
+  .animate-shine {
+    animation: shine 6s ease-in-out infinite;
+  }
+  
+  @keyframes shine {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  /* Count up animation */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-count-up {
+    animation: countUp 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  
   /* Hover effects */
   .hover-lift {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -148,6 +184,14 @@ All colors MUST be HSL.
   
   .hover-lift:hover {
     transform: translateY(-4px);
+  }
+  
+  .hover-glow {
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 25px rgba(0, 255, 204, 0.25);
   }
 }
 
