@@ -9,6 +9,7 @@ import TierProgress from "@/components/TierProgress";
 import SmoothScroll from "@/components/SmoothScroll";
 import HousrRewards from "@/components/HousrRewards";
 import FinancialAdvisorAI from "@/components/FinancialAdvisorAI";
+import TransactionsSection from "@/components/TransactionsSection";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -125,6 +126,7 @@ export default function PrismLanding() {
             <nav className="hidden md:flex items-center gap-8 text-sm text-white/70">
               <a href="#hero" className="hover:text-white">Home</a>
               <a href="#insights" className="hover:text-white">Insights</a>
+              <a href="#transactions" className="hover:text-white">Transactions</a>
               <a href="#challenges" className="hover:text-white">Challenges</a>
               <a href="#rewards" className="hover:text-white">Rewards</a>
             </nav>
@@ -247,6 +249,11 @@ export default function PrismLanding() {
 
         {/* AI FINANCIAL ADVISOR */}
         <FinancialAdvisorAI />
+
+        {/* TRANSACTIONS */}
+        <Section id="transactions" headline="Recent Transactions" subhead="Track every payment and purchase with detailed insights.">
+          <TransactionsSection />
+        </Section>
 
         {/* CHALLENGES */}
         <Section id="challenges" headline="Smart Challenges" subhead="Micro-habits that compound into savings.">
