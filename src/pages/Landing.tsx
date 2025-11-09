@@ -12,6 +12,7 @@ import FinancialAdvisorAI from "@/components/FinancialAdvisorAI";
 import TransactionsSection from "@/components/TransactionsSection";
 import SmartChallengesPro from "@/components/SmartChallengesPro";
 import RewardsPro from "@/components/RewardsPro";
+import PremiumSection from "@/components/PremiumSection";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -144,6 +145,10 @@ export default function PrismLanding() {
         {/* HERO */}
         <Section id="hero">
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(1200px_600px_at_50%_-10%,rgba(16,185,129,0.16),transparent_60%)]" />
+          
+          {/* Premium grain overlay */}
+          <div className="premium-grain absolute inset-0 pointer-events-none" />
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left */}
             <div className="space-y-6">
@@ -161,12 +166,12 @@ export default function PrismLanding() {
               <p className="text-white/70 text-lg max-w-lg">AI that helps you spend better, save faster, and earn real rewards.</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card className="p-5">
+                <Card className="p-5 premium-shine concave-surface">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/50">Current Balance</div>
                   <div className="mt-2 text-4xl font-bold tabular-nums">£{BALANCE.toLocaleString()}</div>
                   <div className="mt-2 flex items-center gap-2 text-emerald-400/80 text-sm"><TrendingUp className="size-4" />+2.3% this month</div>
                 </Card>
-                <Card className="p-5">
+                <Card className="p-5 premium-shine concave-surface">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/50">Reward Points</div>
                   <div className="mt-2 text-4xl font-bold tabular-nums">{POINTS.toLocaleString()}</div>
                 </Card>
@@ -191,16 +196,11 @@ export default function PrismLanding() {
         </Section>
 
         {/* INSIGHTS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <PremiumSection theme="analytical">
           <Section id="insights" headline="Intelligence" subhead="Spending breakdown, trends, and personalized savings tips.">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Donut breakdown */}
-            <Card className="p-6">
+            <Card className="p-6 concave-surface float-subtle">
               <div className="text-sm text-white/70 mb-4">Spending breakdown</div>
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
@@ -222,7 +222,7 @@ export default function PrismLanding() {
             </Card>
 
             {/* Trend + bullets */}
-            <Card className="p-6">
+            <Card className="p-6 concave-surface">
               <div className="text-sm text-white/70 mb-4">Monthly trend</div>
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
@@ -247,16 +247,10 @@ export default function PrismLanding() {
             </Card>
           </div>
           </Section>
-        </motion.div>
+        </PremiumSection>
 
         {/* HOUSR REWARDS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-          className="will-change-transform transform-gpu"
-        >
+        <PremiumSection theme="default">
           <Section id="housr" headline="Housr Rewards" subhead="Earn points every month from rent and bills paid on time.">
           <HousrRewards
             monthLabel="November 2025"
@@ -274,53 +268,29 @@ export default function PrismLanding() {
             }}
           />
           </Section>
-        </motion.div>
+        </PremiumSection>
 
         {/* AI FINANCIAL ADVISOR */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-          className="will-change-transform transform-gpu"
-        >
+        <PremiumSection theme="analytical">
           <FinancialAdvisorAI />
-        </motion.div>
+        </PremiumSection>
 
         {/* CHALLENGES */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="will-change-transform transform-gpu"
-        >
+        <PremiumSection theme="gamified">
           <SmartChallengesPro challenges={CHALLENGES} />
-        </motion.div>
+        </PremiumSection>
 
         {/* REWARDS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-          className="will-change-transform transform-gpu"
-        >
+        <PremiumSection theme="luxury">
           <RewardsPro points={POINTS} onOpenRewards={() => setOpenRewards(true)} />
-        </motion.div>
+        </PremiumSection>
 
         {/* TRANSACTIONS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-          className="will-change-transform transform-gpu"
-        >
+        <PremiumSection theme="default">
           <Section id="transactions" headline="Transaction History" subhead="Track every payment and purchase with detailed insights.">
             <TransactionsSection />
           </Section>
-        </motion.div>
+        </PremiumSection>
 
         <footer className="border-t border-white/10">
           <div className="mx-auto max-w-[1200px] px-6 py-8 text-sm text-white/60 flex items-center justify-between">

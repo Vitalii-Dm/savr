@@ -150,7 +150,7 @@ export default function RewardsPro({ points, onOpenRewards }: RewardsProProps) {
                 transition={{ delay: idx * 0.12, type: 'spring', stiffness: 110 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 className={[
-                  'relative overflow-hidden rounded-3xl border p-5 md:p-6 backdrop-blur-xl',
+                  'relative overflow-hidden rounded-3xl border p-5 md:p-6 backdrop-blur-xl premium-shine concave-surface transform-gpu',
                   'border-white/15 text-white',
                   tier.gradient,
                   isActive ? tier.glow : 'shadow-[0_0_0_1px_rgba(255,255,255,0.08)]',

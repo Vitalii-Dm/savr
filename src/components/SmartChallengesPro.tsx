@@ -63,7 +63,7 @@ export default function SmartChallengesPro({
                 boxShadow: `0 0 30px ${color}33`,
                 transition: { duration: 0.3 },
               }}
-              className="relative rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg overflow-hidden"
+              className="relative rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg overflow-hidden premium-shine concave-surface transform-gpu"
             >
               <div
                 className="pointer-events-none absolute -inset-10 opacity-60"
