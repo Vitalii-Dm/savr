@@ -11,6 +11,7 @@ import HousrRewards from "@/components/HousrRewards";
 import FinancialAdvisorAI from "@/components/FinancialAdvisorAI";
 import TransactionsSection from "@/components/TransactionsSection";
 import SmartChallengesPro from "@/components/SmartChallengesPro";
+import RewardsPro from "@/components/RewardsPro";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -255,67 +256,7 @@ export default function PrismLanding() {
         <SmartChallengesPro challenges={CHALLENGES} />
 
         {/* REWARDS */}
-        <Section id="rewards" headline="Rewards" subhead="From discounts to luxury experiences. Level up for better perks.">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[{
-            key: "bronze",
-            name: "Bronze",
-            min: 100,
-            max: 499,
-            grad: "from-amber-700 via-amber-600 to-amber-500",
-            ring: "ring-amber-400/40",
-            icon: Trophy,
-            desc: "Student discounts • Cashback vouchers"
-          }, {
-            key: "silver",
-            name: "Silver",
-            min: 500,
-            max: 1499,
-            grad: "from-zinc-300 via-zinc-200 to-zinc-100",
-            ring: "ring-zinc-300/40",
-            icon: Star,
-            desc: "Restaurant deals • Cinema passes"
-          }, {
-            key: "gold",
-            name: "Gold",
-            min: 1500,
-            max: 4999,
-            grad: "from-yellow-400 via-amber-300 to-yellow-200",
-            ring: "ring-yellow-300/40",
-            icon: Crown,
-            desc: "Luxury experiences • Weekend getaways"
-          }, {
-            key: "platinum",
-            name: "Platinum",
-            min: 5000,
-            max: Infinity,
-            grad: "from-indigo-200 via-sky-200 to-fuchsia-200",
-            ring: "ring-sky-200/40",
-            icon: Sparkles,
-            desc: "Premium gyms • Designer rentals"
-          }].map(t => <motion.div key={t.key} whileHover={{
-            scale: 1.01
-          }} className={`relative rounded-3xl border border-white/10 bg-white/5 p-6 ring-1 ${t.ring} overflow-hidden`}> 
-                <div className={`absolute inset-0 opacity-70 bg-gradient-to-br ${t.grad}`} style={{
-              mixBlendMode: "soft-light"
-            }} />
-                <div className="relative flex items-center justify-between">
-                  <div className="flex items-center gap-3"><t.icon className="size-5" /><div className="text-xl font-semibold">{t.name}</div></div>
-                  <div className="rounded-full bg-black/60 border border-white/10 px-3 py-1 text-xs">{t.min.toLocaleString()}–{t.max === Infinity ? "∞" : t.max.toLocaleString()} pts</div>
-                </div>
-                <div className="relative mt-3 text-sm text-white/85">{t.desc}</div>
-              </motion.div>)}
-          </div>
-
-          <Card className="p-6 mt-8">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-white/70">You have <b>{POINTS.toLocaleString()}</b> pts</div>
-              <button onClick={() => setOpenRewards(true)} className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 font-semibold text-black">
-                <Gift className="size-4" /> Redeem Rewards
-              </button>
-            </div>
-          </Card>
-        </Section>
+        <RewardsPro points={POINTS} onRedeem={(id) => console.log('Redeemed:', id)} />
 
         {/* TRANSACTIONS */}
         <Section id="transactions" headline="Transaction History" subhead="Track every payment and purchase with detailed insights.">
