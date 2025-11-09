@@ -31,8 +31,8 @@ const TIERS: Tier[] = [
     min: 100,
     max: 499,
     icon: <Trophy className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#7a4c22_0%,#c3833d_55%,#6a3b17_100%)]',
-    glow: 'shadow-[0_0_0_2px_rgba(195,131,61,0.35)]',
+    gradient: 'bg-[linear-gradient(135deg,#8B4513_0%,#CD7F32_35%,#D2691E_65%,#B8860B_100%)]',
+    glow: 'shadow-[0_0_32px_rgba(205,127,50,0.4),0_0_0_1px_rgba(205,127,50,0.25)]',
     perks: [
       { icon: <Ticket className="h-4 w-4" />, label: 'Student discounts' },
       { icon: <Gift className="h-4 w-4" />, label: 'Cashback vouchers' },
@@ -44,8 +44,8 @@ const TIERS: Tier[] = [
     min: 500,
     max: 1499,
     icon: <Star className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#bfc6cf_0%,#e6ebf1_55%,#9aa3ad_100%)]',
-    glow: 'shadow-[0_0_0_2px_rgba(191,198,207,0.35)]',
+    gradient: 'bg-[linear-gradient(135deg,#C0C0C0_0%,#E8E8E8_40%,#D3D3D3_60%,#B0C4DE_100%)]',
+    glow: 'shadow-[0_0_32px_rgba(192,192,192,0.35),0_0_0_1px_rgba(224,224,224,0.3)]',
     perks: [
       { icon: <Ticket className="h-4 w-4" />, label: 'Cinema passes' },
       { icon: <Utensils className="h-4 w-4" />, label: 'Restaurant deals' },
@@ -57,8 +57,8 @@ const TIERS: Tier[] = [
     min: 1500,
     max: 4999,
     icon: <Crown className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#cfa63a_0%,#ffe07a_50%,#bb8b12_100%)]',
-    glow: 'shadow-[0_0_0_2px_rgba(255,224,122,0.40)]',
+    gradient: 'bg-[linear-gradient(135deg,#FFD700_0%,#FFC700_30%,#FFE55C_50%,#FFB700_80%,#FFA500_100%)]',
+    glow: 'shadow-[0_0_40px_rgba(255,215,0,0.5),0_0_0_1px_rgba(255,215,0,0.35)]',
     perks: [
       { icon: <Gift className="h-4 w-4" />, label: 'Luxury experiences' },
       { icon: <Ticket className="h-4 w-4" />, label: 'Weekend getaways' },
@@ -69,8 +69,8 @@ const TIERS: Tier[] = [
     name: 'Platinum',
     min: 5000,
     icon: <Gem className="h-5 w-5" />,
-    gradient: 'bg-[linear-gradient(135deg,#a9b6ff_0%,#b7e3ff_35%,#d0b0ff_70%,#9bd5ff_100%)]',
-    glow: 'shadow-[0_0_0_2px_rgba(169,182,255,0.40)]',
+    gradient: 'bg-[linear-gradient(135deg,#E6E6FA_0%,#B8C5F2_25%,#ADD8E6_50%,#D8BFD8_75%,#E6E6FA_100%)]',
+    glow: 'shadow-[0_0_40px_rgba(173,216,230,0.45),0_0_0_1px_rgba(230,230,250,0.4)]',
     perks: [
       { icon: <Dumbbell className="h-4 w-4" />, label: 'Premium gyms' },
       { icon: <Gift className="h-4 w-4" />, label: 'Designer rentals' },
@@ -148,17 +148,52 @@ export default function RewardsPro({ points, onOpenRewards }: RewardsProProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ delay: idx * 0.12, type: 'spring', stiffness: 110 }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                whileHover={{ 
+                  y: -6, 
+                  filter: 'blur(0px)',
+                  transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } 
+                }}
                 className={[
-                  'relative overflow-hidden rounded-3xl border p-5 md:p-6 backdrop-blur-xl premium-shine concave-surface transform-gpu',
-                  'border-white/15 text-white',
+                  'group relative overflow-hidden rounded-3xl border-[0.5px] p-5 md:p-6 backdrop-blur-xl premium-shine concave-surface transform-gpu',
+                  'border-white/20 text-white',
+                  'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]',
                   tier.gradient,
-                  isActive ? tier.glow : 'shadow-[0_0_0_1px_rgba(255,255,255,0.08)]',
+                  isActive ? tier.glow : 'shadow-[0_0_0_0.5px_rgba(255,255,255,0.12)]',
                 ].join(' ')}
+                style={{
+                  willChange: 'transform, filter',
+                }}
               >
-                {/* Diagonal metallic shine */}
-                <div className="pointer-events-none absolute -inset-1 opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                <div className="pointer-events-none absolute -top-1 -left-1 h-56 w-56 rotate-[20deg] bg-[radial-gradient(circle,rgba(255,255,255,0.35),transparent_60%)] opacity-10" />
+                {/* Metallic micro-texture noise */}
+                <div 
+                  className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                  }}
+                />
+                
+                {/* Top reflective edge highlight */}
+                <div className="pointer-events-none absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Diagonal metallic sheen animation */}
+                <motion.div 
+                  className="pointer-events-none absolute -inset-1 opacity-0 group-hover:opacity-25 transition-opacity duration-700"
+                  style={{
+                    background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 55%, transparent 100%)',
+                    backgroundSize: '200% 200%',
+                  }}
+                  animate={{
+                    backgroundPosition: ['0% 0%', '100% 100%'],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                />
+                
+                {/* Radial glow spotlight */}
+                <div className="pointer-events-none absolute -top-1 -left-1 h-56 w-56 rotate-[20deg] bg-[radial-gradient(circle,rgba(255,255,255,0.25),transparent_65%)] opacity-15" />
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <div className="rounded-xl bg-black/25 backdrop-blur-md p-2">

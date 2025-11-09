@@ -43,19 +43,20 @@ section {
   inset: 0;
   background: linear-gradient(110deg,
     transparent 0%,
-    rgba(255,255,255,0.12) 35%,
-    rgba(255,255,255,0.04) 50%,
-    transparent 65%
+    rgba(255,255,255,0.08) 30%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.08) 60%,
+    transparent 75%
   );
-  transform: translateX(-120%);
-  animation: shineMove 4.5s ease-in-out infinite;
+  transform: translateX(-130%);
+  animation: shineMove 5s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes shineMove {
-  0% { transform: translateX(-120%); }
-  50% { transform: translateX(30%); }
-  100% { transform: translateX(120%); }
+  0% { transform: translateX(-130%); }
+  50% { transform: translateX(40%); }
+  100% { transform: translateX(130%); }
 }
 
 /* Glow edge lighting (top of sections) */
