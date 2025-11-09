@@ -10,6 +10,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import HousrRewards from "@/components/HousrRewards";
 import FinancialAdvisorAI from "@/components/FinancialAdvisorAI";
 import TransactionsSection from "@/components/TransactionsSection";
+import SmartChallengesPro from "@/components/SmartChallengesPro";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -251,28 +252,7 @@ export default function PrismLanding() {
         <FinancialAdvisorAI />
 
         {/* CHALLENGES */}
-        <Section id="challenges" headline="Smart Challenges" subhead="Micro-habits that compound into savings.">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {CHALLENGES.map(c => <motion.div key={c.id} whileHover={{
-            y: -6
-          }} transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 20
-          }} className="rounded-3xl border border-white/10 bg-white/5 p-6 ring-1 ring-emerald-400/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3"><c.icon className="size-5 text-emerald-300" /><div className="text-lg font-semibold">{c.label}</div></div>
-                  <div className="text-xs font-semibold text-emerald-300">+{c.pts} pts</div>
-                </div>
-                <div className="mt-5 h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400" style={{
-                width: `${Math.round(c.progress * 100)}%`
-              }} />
-                </div>
-                <div className="mt-2 text-xs text-white/60">{Math.round(c.progress * 100)}% complete</div>
-              </motion.div>)}
-          </div>
-        </Section>
+        <SmartChallengesPro challenges={CHALLENGES} />
 
         {/* REWARDS */}
         <Section id="rewards" headline="Rewards" subhead="From discounts to luxury experiences. Level up for better perks.">
