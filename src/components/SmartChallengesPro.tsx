@@ -121,7 +121,7 @@ export default function SmartChallengesPro({
         whileInView={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        Complete 3 in a week to unlock a surprise bonus 🌟
+        Complete all 3 this week to earn a household eco-bonus 🌱
       </motion.div>
     </section>
   );

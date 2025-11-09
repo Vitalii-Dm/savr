@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Upload, ArrowRight, Trophy, Coffee, Footprints, Utensils, CheckCircle2, Crown, Star, Sparkles, Gift, TrendingUp } from "lucide-react";
+import { Upload, ArrowRight, Trophy, CheckCircle2, Crown, Star, Sparkles, Gift, TrendingUp, Receipt, Droplet, Zap } from "lucide-react";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { SavingsPot3D } from "@/components/SavingsPot3D";
 import { RewardsModal } from "@/components/RewardsModal";
@@ -69,22 +69,22 @@ const monthlyTrend = [{
 }];
 const CHALLENGES = [{
   id: 1,
-  icon: Coffee,
-  label: "Skip 2 coffees",
-  pts: 50,
-  progress: 0.3
+  icon: Receipt,
+  label: "Pay utilities before the due date",
+  pts: 80,
+  progress: 0.65
 }, {
   id: 2,
-  icon: Utensils,
-  label: "Cook 3 dinners",
-  pts: 75,
-  progress: 0.66
+  icon: Droplet,
+  label: "Cut down shower time or reduce water usage by 10%",
+  pts: 120,
+  progress: 0.42
 }, {
   id: 3,
-  icon: Footprints,
-  label: "Walk once",
-  pts: 100,
-  progress: 0.0
+  icon: Zap,
+  label: "Turn off lights + appliances when not needed",
+  pts: 150,
+  progress: 0.78
 }];
 const COLORS = ["#34d399", "#10b981", "#a7f3d0", "#6ee7b7", "#064e3b"];
 function Card({
