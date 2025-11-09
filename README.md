@@ -1,73 +1,114 @@
-# Welcome to your Lovable project
+# **SAVR**
 
-## Project info
+> 💸 Presented at the **GreatUniHack 2025**
 
-**URL**: https://lovable.dev/projects/b3ef35d3-384f-4d09-a79d-25c033399637
+---
 
-## How can I edit this code?
+## 🚀 Overview
 
-There are several ways of editing your application.
+**SAVR** is a student-focused, AI-powered financial intelligence platform that transforms raw spending data into actionable insights, gamified savings challenges, and tiered rewards. The React SPA delivers a cinematic, tactile journey from transaction upload to personalized suggestions, while the Python analytics engine processes transactions, detects anomalies, recurring subscriptions, and spending patterns. Together, SAVR helps students save smarter, spend consciously, and earn rewards — all with privacy-first, on-device analytics.  
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b3ef35d3-384f-4d09-a79d-25c033399637) and start prompting.
+## 💡 Core Features
 
-Changes made via Lovable will be committed automatically to this repo.
+### 💰 Smart Savings Hero
+- 3D Savings Pot using **React Three Fiber + Drei + React-Spring** visually tracks balance vs. goal.  
+- Animated liquid, coin-drop effects, and glass refraction respond in real time to deposits and tier progress.  
+- Ambient UI elements reflect current reward tier (Bronze → Platinum) and points-to-next-level dynamically.  
 
-**Use your preferred IDE**
+### 🧠 Spending Analysis Lab
+- Python-powered backend (`financial_logic/analysis.py`) ingests transactions, normalizes timestamps and categories, winsorizes outliers, and tracks spend/income flows.  
+- Detects patterns: DOW/time-of-day peaks, merchant concentration, drip-spend leaks, ride-hail usage, late-night spending.  
+- Highlights anomalies: weekly spikes, single-day outliers, duplicate charges, and ghost subscriptions.  
+- Generates rule-based suggestions and micro-challenges (e.g., Grocery Trim, Subscription Audit) tied to real spending behaviour.  
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🎯 Gamified Challenges & Insights
+- React SPA displays challenges linked to actionable levers: skip coffees, cook meals at home, limit ride-hail trips.  
+- Real-time progress tracking via **Framer Motion**, showing points earned and impact on Savings Pot.  
+- Insights visualized with **Recharts**, showing category trends, month-over-month deltas, and spending vs. budget.  
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🏆 Tiered Reward System
+- Bronze → Platinum tiers with animated metallic gradients, glowing progress bars, and reward modals.  
+- Redeem points for vouchers, experiences, and brand deals; all visually immersive with glassmorphic overlays.  
+- Backend logic ensures rewards reflect real financial actions and evidence-based savings.  
 
-Follow these steps:
+### 🧮 Python Analytics Toolkit
+- `financial_logic/analysis.py` orchestrates preprocessing, trend analysis, pattern mining, recurring detection, anomaly detection, budget variance, and suggestion generation.  
+- Modular design enables SPA consumption of a single summary dict with: trends, anomalies, recurring items, suggestions, challenges, and projected savings.  
+- Optional mock mode for demoing without live transactions or API access.  
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🏗️ Tech Stack
 
-# Step 3: Install the necessary dependencies.
-npm i
+| Layer | Technologies |
+|:------|:-------------|
+| **Frontend Runtime** | React 18, Next.js 14 |
+| **Styling & Motion** | TailwindCSS, Framer Motion, React-Spring |
+| **3D Graphics** | React Three Fiber, Drei, Rapier Physics |
+| **Charts & Analytics** | Recharts |
+| **Smooth UX** | Lenis scroll inertia |
+| **Backend Analytics** | Python 3.10+, Pandas, NumPy |
+| **AI / Optional** | GPT/Gemini API for insights |
+| **Database / Persistence** | Supabase or Firebase |
+| **Version Control** | GitHub |
+| **Deployment** | Vercel |
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## 🧠 Why SAVR Stands Out
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+✅ **Full-spending visibility** — transforms raw transactions into digestible, human-centred insights.  
+✅ **Gamified saving journey** — 3D Savings Pot and challenges drive motivation and micro-behaviour change.  
+✅ **AI-backed suggestions** — personalized tips for reducing recurring subscriptions, late-night spending, and drip leaks.  
+✅ **Privacy-first design** — all transaction analytics can run locally; optional anonymized cloud storage.  
+✅ **Tiered rewards ecosystem** — incentivizes consistent savings with tangible, visually appealing benefits.  
+✅ **Engaging UI** — cinematic, glassmorphic interface with fluid transitions and responsive charts.  
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🏅 Milestones & Achievements
 
-## What technologies are used for this project?
+| **Milestone** | **Criteria** |
+|---------------|--------------|
+| First Transaction Uploaded | Connect CSV/API and process initial transactions |
+| Insight Explorer | View category breakdown, trends, and anomalies |
+| Challenge Initiator | Complete first gamified spending challenge |
+| Reward Achiever | Reach next tier in Savings Pot and redeem points |
+| Pattern Detective | Trigger recurring detection, anomaly flags, and suggestions |
+| Smart Saver | Complete three challenges, reducing top spend categories |
+| Analytics Master | Explore full 30-day trend, projections, and AI insights |
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🌐 User Journey
 
-## How can I deploy this project?
+1. **Landing Dashboard** – Hero section with Savings Pot, reward tier, and points-to-next-level overlay.  
+2. **Transaction Upload** – CSV/API ingest, preprocessing, and normalization.  
+3. **Spending Analysis** – AI-driven insights, trend charts, and anomalies displayed.  
+4. **Challenges & Suggestions** – Gamified tasks linked to real savings actions.  
+5. **Reward Redemption** – Tiered reward system with immersive modals and progress indicators.  
+6. **Ongoing Monitoring** – Users track spend, challenges, and projected savings dynamically.  
 
-Simply open [Lovable](https://lovable.dev/projects/b3ef35d3-384f-4d09-a79d-25c033399637) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 🔮 Future Enhancements
 
-Yes, you can!
+- 🪙 **Real-time bank sync** — auto-update transactions from multiple institutions.  
+- 📊 **Advanced forecasting** — hybrid seasonal + moving-average predictions for smarter budgeting.  
+- 🧩 **Adaptive challenges** — AI-curated suggestions based on changing spending behaviour.  
+- ☁️ **Persistent cloud profiles** — multi-device continuity with Supabase/Firebase.  
+- 📱 **Mobile companion app** — wrap SPA in Capacitor/Expo for Android/iOS.  
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📁 Quick Reference
+
+- `src/components/sections/*` — Hero, Intelligence, Challenges, Rewards, 3D Savings Pot  
+- `src/contexts/*` — FinancialContext, ChallengeContext, RewardContext  
+- `financial_logic/analysis.py` — Core Python engine for preprocessing, trend analysis, pattern mining, anomaly detection, and suggestion building  
+- `financial_logic/utils.py` — Helper functions for normalization, scoring, and logging  
+- `mock_data/` — Sample transaction CSVs and fallback data for demo  
+
+SAVR delivers a premium, gamified student finance experience that blends **data intelligence, AI insights, and immersive visuals** — helping young adults save smarter while feeling rewarded. 💎  
