@@ -88,7 +88,7 @@ function tierFromPoints(pts: number): TierKey {
   return 'bronze';
 }
 
-function CategoryArt({ category }: { category: Reward['category'] }) {
+function CategoryArt({ category, isPressed }: { category: Reward['category']; isPressed?: boolean }) {
   const Icon = ICON_BY_CAT[category];
   const palette =
     category === 'Food' ? 'from-emerald-400/30 to-teal-300/10'
@@ -98,13 +98,27 @@ function CategoryArt({ category }: { category: Reward['category'] }) {
     : 'from-zinc-300/30 to-zinc-100/10';
 
   return (
-    <div className="relative h-32 rounded-2xl overflow-hidden border border-white/10 bg-black/30">
+    <motion.div 
+      className="relative h-32 rounded-2xl overflow-hidden border border-white/10 bg-black/30"
+      animate={{
+        boxShadow: isPressed 
+          ? '0 0 30px rgba(16, 185, 129, 0.5), 0 0 60px rgba(16, 185, 129, 0.3)' 
+          : '0 0 0px rgba(16, 185, 129, 0)',
+      }}
+      transition={{ duration: 0.3 }}
+    >
       <div className={`absolute inset-0 bg-gradient-to-br ${palette}`} />
       <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
       <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-white/5 blur-2xl" />
-      <div className="absolute inset-0 grid place-content-center">
-        <Icon className="h-8 w-8 text-white/90" />
-      </div>
+      <motion.div 
+        className="absolute inset-0 grid place-content-center"
+        animate={{
+          scale: isPressed ? 1.15 : 1,
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        <Icon className={`h-8 w-8 ${isPressed ? 'text-emerald-400' : 'text-white/90'}`} />
+      </motion.div>
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
           className="absolute -inset-x-20 top-1/2 h-16 bg-white/20 blur-lg"
@@ -114,7 +128,7 @@ function CategoryArt({ category }: { category: Reward['category'] }) {
           style={{ mixBlendMode: 'soft-light' }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -123,13 +137,17 @@ function RewardCard({
   canRedeem,
   onRedeem,
 }: { r: Reward; canRedeem: boolean; onRedeem: (r: Reward) => void }) {
+  const [isPressed, setIsPressed] = useState(false);
   const TierIcon = TIERS[r.tier].icon;
   return (
     <motion.div
       whileHover={{ y: -6 }}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
       className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 flex flex-col gap-3"
     >
-      <CategoryArt category={r.category} />
+      <CategoryArt category={r.category} isPressed={isPressed} />
       <div className="flex items-center justify-between">
         <div className="font-semibold">{r.title}</div>
         <div className="text-xs rounded-full bg-black/60 border border-white/10 px-2 py-0.5">

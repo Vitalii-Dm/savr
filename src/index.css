@@ -14,21 +14,21 @@ All colors MUST be HSL.
     --primary: 168 67% 14%; /* Deep Forest Green #0A3D2C */
     --primary-foreground: 0 0% 96%; /* Off-White #F5F5F5 */
     
-    --background: 0 0% 5%; /* Dark Charcoal #0D0D0D */
-    --foreground: 0 0% 96%; /* Off-White for text */
+    --background: 0 0% 98%; /* Light background #FAFAFA */
+    --foreground: 0 0% 10%; /* Dark text */
     
-    --card: 0 0% 10%; /* Slate Black #1A1A1A */
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 100%; /* White card #FFFFFF */
+    --card-foreground: 0 0% 10%;
     
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
     
     /* Secondary Colors */
-    --secondary: 0 0% 15%; /* Slightly lighter for secondary surfaces */
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 0 0% 96%; /* Light gray for secondary surfaces */
+    --secondary-foreground: 0 0% 10%;
     
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 65%; /* Muted text */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%; /* Muted text */
     
     /* Accent & Success */
     --accent: 142 76% 36%; /* Emerald Accent #10B981 */
@@ -44,8 +44,8 @@ All colors MUST be HSL.
     --platinum: 0 0% 90%; /* #E5E4E2 */
     
     /* UI Elements */
-    --border: 0 0% 20%; /* Subtle borders */
-    --input: 0 0% 15%;
+    --border: 0 0% 90%; /* Light borders */
+    --input: 0 0% 96%;
     --ring: 168 67% 14%;
     
     --destructive: 0 84% 60%;
