@@ -13,7 +13,8 @@ import TransactionsSection from "@/components/TransactionsSection";
 import SmartChallengesPro from "@/components/SmartChallengesPro";
 import RewardsPro from "@/components/RewardsPro";
 import PremiumSection from "@/components/PremiumSection";
-import { RewardsPanel, useRewardsStore } from "@/rewards/RewardsEngine";
+import { RewardsTierPanel } from "@/rewards/RewardsTierPanel";
+import { useRewardsStore } from "@/rewards/RewardsEngine";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -288,7 +289,7 @@ export default function PrismLanding() {
         {/* REWARDS */}
         <PremiumSection theme="luxury">
           <Section id="rewards" headline="Redeem Rewards" subhead="Unlock exclusive perks with your points — swipe to claim with QR codes.">
-            <RewardsPanel />
+            <RewardsTierPanel />
           </Section>
         </PremiumSection>
 

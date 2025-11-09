@@ -1,335 +1,179 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { QRCodeCanvas } from "qrcode.react";
 import { create } from "zustand";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
-// ---------- Types
+// --- Types
 type Tier = "bronze" | "silver" | "gold" | "platinum";
-
-type Reward = {
-  id: string;
-  title: string;
-  vendor: string;
-  points: number;
-  tier: Tier;
-  badge?: string;
-  description?: string;
-  icon?: string; // lucide name if you use icons elsewhere
-  colorFrom: string; // gradient start
-  colorTo: string;   // gradient end
+export type Reward = {
+  id: string; title: string; vendor: string; points: number; tier: Tier;
+  description?: string; colorFrom: string; colorTo: string;
 };
-
 type RedemptionTicket = {
-  ticketId: string;
-  rewardId: string;
-  title: string;
-  vendor: string;
-  points: number;
-  issuedAt: string;   // ISO
-  expiresAt: string;  // ISO
-  status: "active" | "consumed" | "expired";
-  qrPayload: string;  // signed data payload
+  ticketId: string; rewardId: string; title: string; vendor: string; points: number;
+  issuedAt: string; expiresAt: string; status: "active" | "consumed" | "expired";
+  qrPayload: string;
 };
 
-// ---------- Catalog (associate colors with tiers like Revolut)
-const TIER_COLORS: Record<Tier, { from: string; to: string; ring: string }> = {
-  bronze:   { from: "from-[#7a4b2b]", to: "to-[#bf8a5a]", ring: "ring-[#caa177]/40" },
-  silver:   { from: "from-[#585c68]", to: "to-[#b9c4cf]", ring: "ring-[#c7d3df]/40" },
-  gold:     { from: "from-[#9a7a2f]", to: "to-[#f0d27a]", ring: "ring-[#f4e2a2]/40" },
-  platinum: { from: "from-[#5b6a78]", to: "to-[#c0d8ee]", ring: "ring-[#cfe7ff]/40" },
-};
-
-// Example rewards; you can fetch from API instead
-const DEFAULT_CATALOG: Reward[] = [
-  {
-    id: "coffee-10",
-    title: "£10 Coffee Voucher",
-    vendor: "Campus Coffee",
-    points: 250,
-    tier: "bronze",
-    description: "Treat yourself or a friend.",
-    colorFrom: "#7a4b2b",
-    colorTo: "#bf8a5a",
-  },
-  {
-    id: "spotify-1m",
-    title: "1 mo Spotify Premium",
-    vendor: "Spotify",
-    points: 750,
-    tier: "silver",
-    description: "Music on us for a month.",
-    colorFrom: "#585c68",
-    colorTo: "#b9c4cf",
-  },
-  {
-    id: "gym-day",
-    title: "Premium Gym Day Pass",
-    vendor: "Anytime Fitness",
-    points: 1600,
-    tier: "gold",
-    description: "Train, swim, sauna — full package.",
-    colorFrom: "#9a7a2f",
-    colorTo: "#f0d27a",
-  },
-  {
-    id: "getaway-lite",
-    title: "Weekend Getaway Lite",
-    vendor: "Student Breaks",
-    points: 4800,
-    tier: "platinum",
-    description: "Two days escape. You earned it.",
-    colorFrom: "#5b6a78",
-    colorTo: "#c0d8ee",
-  },
+// --- Demo catalog
+export const DEFAULT_CATALOG: Reward[] = [
+  { id:"coffee-10", title:"£10 Coffee Voucher", vendor:"Campus Coffee", points:250, tier:"bronze", colorFrom:"#7a4b2b", colorTo:"#bf8a5a", description:"Treat yourself or a friend." },
+  { id:"spotify-1m", title:"1 mo Spotify Premium", vendor:"Spotify", points:750, tier:"silver", colorFrom:"#585c68", colorTo:"#b9c4cf", description:"Music on us for a month." },
+  { id:"gym-day",   title:"Premium Gym Day Pass", vendor:"Anytime Fitness", points:1600, tier:"gold", colorFrom:"#9a7a2f", colorTo:"#f0d27a", description:"Train, swim, sauna — full package." },
+  { id:"getaway",   title:"Weekend Getaway Lite", vendor:"Student Breaks", points:4800, tier:"platinum", colorFrom:"#5b6a78", colorTo:"#c0d8ee", description:"Two days escape." },
 ];
 
-// ---------- Local storage helpers
-const LS_KEYS = {
-  points: "savr_points",
-  redemptions: "savr_redemptions",
-};
+// --- LocalStorage
+const LS_POINTS = "savr_points";
+const LS_TIX    = "savr_redemptions";
 
-const loadJSON = <T,>(k: string, fallback: T): T => {
-  try {
-    const s = localStorage.getItem(k);
-    return s ? (JSON.parse(s) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-};
-const saveJSON = (k: string, v: unknown) => {
-  try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
-};
+const load = <T,>(k:string, fb:T):T => { try { const s = localStorage.getItem(k); return s? JSON.parse(s):fb; } catch { return fb; } };
+const save = (k:string, v:unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
-// ---------- Store
+// --- Store
 type RewardsState = {
   points: number;
   catalog: Reward[];
   redemptions: RedemptionTicket[];
-  setPoints: (p: number) => void;
-  addPoints: (delta: number) => void;
-  redeem: (reward: Reward) => RedemptionTicket | null;
-  consumeTicket: (ticketId: string) => void;
-  expireTickets: () => void;
-  resetAll: () => void;
+  setPoints: (p:number)=>void;
+  addPoints: (d:number)=>void;
+  redeem: (r:Reward)=>RedemptionTicket|null;
+  consumeTicket:(id:string)=>void;
+  expireTickets:()=>void;
+  uiOpen: boolean;
+  uiSelected: Reward|null;
+  openRedeem: (r?:Reward|null)=>void;
+  closeRedeem: ()=>void;
 };
 
-export const useRewardsStore = create<RewardsState>((set, get) => ({
-  points: loadJSON<number>(LS_KEYS.points, 1250), // default demo
+export const useRewardsStore = create<RewardsState>((set,get)=>({
+  points: load<number>(LS_POINTS, 1250),
   catalog: DEFAULT_CATALOG,
-  redemptions: loadJSON<RedemptionTicket[]>(LS_KEYS.redemptions, []),
+  redemptions: load<RedemptionTicket[]>(LS_TIX, []),
 
-  setPoints: (p) => { set({ points: p }); saveJSON(LS_KEYS.points, p); },
-  addPoints: (delta) => {
-    const next = Math.max(0, get().points + delta);
-    set({ points: next }); saveJSON(LS_KEYS.points, next);
-  },
+  setPoints: (p)=>{ set({points:p}); save(LS_POINTS,p); },
+  addPoints: (d)=>{ const n=Math.max(0,get().points+d); set({points:n}); save(LS_POINTS,n); },
 
-  // Creates a signed QR payload (offline demo). In prod, request server to mint.
-  redeem: (reward) => {
-    const current = get().points;
-    if (current < reward.points) return null;
+  redeem: (reward)=>{
+    const current=get().points; if(current<reward.points) return null;
+    const next=current-reward.points;
+    const issued=dayjs(); const exp=issued.add(30,"minute");
+    const ticketId=nanoid(10);
+    const payload={v:1,tid:ticketId,rid:reward.id,pts:reward.points,ts:issued.toISOString(),exp:exp.toISOString()};
+    const qrPayload=btoa(JSON.stringify(payload)); // demo only
 
-    // Deduct immediately (optimistic)
-    const nextPoints = current - reward.points;
-    const issuedAt = dayjs();
-    const expiresAt = issuedAt.add(30, "minute"); // 30-min expiry window
-
-    // Minimal signature demo (do server-side HMAC in prod)
-    const ticketId = nanoid(10);
-    const payload = {
-      v: 1,
-      tid: ticketId,
-      rid: reward.id,
-      pts: reward.points,
-      ts: issuedAt.toISOString(),
-      exp: expiresAt.toISOString(),
+    const t:RedemptionTicket={
+      ticketId, rewardId: reward.id, title: reward.title, vendor: reward.vendor,
+      points: reward.points, issuedAt: issued.toISOString(), expiresAt: exp.toISOString(),
+      status:"active", qrPayload
     };
-    const qrPayload = btoa(JSON.stringify(payload)); // for demo only
-
-    const ticket: RedemptionTicket = {
-      ticketId,
-      rewardId: reward.id,
-      title: reward.title,
-      vendor: reward.vendor,
-      points: reward.points,
-      issuedAt: issuedAt.toISOString(),
-      expiresAt: expiresAt.toISOString(),
-      status: "active",
-      qrPayload,
-    };
-
-    const updated = [...get().redemptions, ticket];
-    set({ points: nextPoints, redemptions: updated });
-    saveJSON(LS_KEYS.points, nextPoints);
-    saveJSON(LS_KEYS.redemptions, updated);
-    return ticket;
+    const updated=[...get().redemptions,t];
+    set({points:next, redemptions:updated}); save(LS_POINTS,next); save(LS_TIX,updated);
+    return t;
   },
 
-  consumeTicket: (ticketId) => {
-    const updated = get().redemptions.map(t =>
-      t.ticketId === ticketId ? { ...t, status: "consumed" as const } : t
-    );
-    set({ redemptions: updated }); saveJSON(LS_KEYS.redemptions, updated);
+  consumeTicket:(id)=>{
+    const upd=get().redemptions.map(t=>t.ticketId===id?{...t,status:"consumed" as const}:t);
+    set({redemptions:upd}); save(LS_TIX,upd);
   },
 
-  expireTickets: () => {
-    const now = dayjs();
-    const updated = get().redemptions.map(t =>
-      t.status === "active" && now.isAfter(dayjs(t.expiresAt))
-        ? { ...t, status: "expired" as const }
-        : t
-    );
-    set({ redemptions: updated }); saveJSON(LS_KEYS.redemptions, updated);
+  expireTickets:()=>{
+    const now=dayjs(); const upd=get().redemptions.map(t=> t.status==="active"&&now.isAfter(dayjs(t.expiresAt))?{...t,status:"expired" as const}:t);
+    set({redemptions:upd}); save(LS_TIX,upd);
   },
 
-  resetAll: () => {
-    set({ points: 0, redemptions: [] });
-    saveJSON(LS_KEYS.points, 0);
-    saveJSON(LS_KEYS.redemptions, []);
-  },
+  // UI wiring
+  uiOpen:false, uiSelected:null,
+  openRedeem:(r=null)=>set({uiOpen:true, uiSelected:r??null}),
+  closeRedeem:()=>set({uiOpen:false, uiSelected:null}),
 }));
 
-// ---------- UI Helpers
-const glass = "backdrop-blur-lg bg-white/5 border border-white/10 shadow-[0_0_1px_0_rgba(255,255,255,0.15)_inset,0_10px_40px_-10px_rgba(0,0,0,0.5)]";
-const metallicRing = (tier: Tier) => `ring-1 ${TIER_COLORS[tier].ring}`;
-const metallicGradCls = (tier: Tier) =>
-  `bg-gradient-to-br ${TIER_COLORS[tier].from} ${TIER_COLORS[tier].to}`;
-const fmtPts = (n: number) => `${n.toLocaleString()} pts`;
-
-// ---------- Swipe to claim (framer)
-const SwipeToClaim: React.FC<{ onConfirm: () => void; disabled?: boolean }> = ({ onConfirm, disabled }) => {
-  const controls = useAnimation();
-  const [progress, setProgress] = useState(0);
-
+// --- Swipe control
+const SwipeToClaim: React.FC<{ onConfirm:()=>void; disabled?:boolean }> = ({onConfirm,disabled})=>{
+  const [progress,setProgress]=useState(0);
+  const ctrl=useAnimation();
   return (
     <div className="relative w-full h-14 rounded-xl overflow-hidden bg-black/30 border border-white/10">
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.07),transparent_60%)]" />
       <motion.div
-        drag="x"
-        dragConstraints={{ left: 0, right: 280 }}
-        dragElastic={0.04}
-        onDrag={(e, info) => {
-          const p = Math.min(1, Math.max(0, info.point.x / 280));
-          setProgress(p);
-        }}
-        onDragEnd={(e, info) => {
-          if (progress > 0.85 && !disabled) {
-            onConfirm();
-            controls.start({ x: 0 });
-            setProgress(0);
-          } else {
-            controls.start({ x: 0 });
-            setProgress(0);
-          }
-        }}
-        animate={controls}
-        className="h-14 w-36 rounded-xl cursor-pointer select-none grid place-items-center text-sm font-medium text-white shadow-lg"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(40,255,190,0.8), rgba(0,200,120,0.8))",
-        }}
+        drag="x" dragConstraints={{left:0,right:280}} dragElastic={0.04}
+        onDrag={(e,info)=> setProgress(Math.min(1,Math.max(0,info.point.x/280)))}
+        onDragEnd={()=>{ if(progress>0.85 && !disabled){ onConfirm(); } ctrl.start({x:0}); setProgress(0); }}
+        animate={ctrl}
+        className="h-14 w-36 rounded-xl grid place-items-center text-sm font-medium text-white shadow-lg"
+        style={{ background:"linear-gradient(135deg, rgba(40,255,190,0.8), rgba(0,200,120,0.8))" }}
       >
         Swipe to claim →
       </motion.div>
-      <div
-        className="absolute left-0 top-0 h-full bg-emerald-500/10 transition-[width]"
-        style={{ width: `${progress * 100}%` }}
-      />
+      <div className="absolute left-0 top-0 h-full bg-emerald-500/10" style={{width:`${progress*100}%`}}/>
     </div>
   );
 };
 
-// ---------- Redeem modal
-const RedeemModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  selected?: Reward | null;
-  onRedeemed?: (t: RedemptionTicket) => void;
-}> = ({ open, onClose, selected, onRedeemed }) => {
-  const { points, redeem } = useRewardsStore();
-  const [ticket, setTicket] = useState<RedemptionTicket | null>(null);
+// --- Modal
+export const RedeemModal: React.FC = () => {
+  const { uiOpen, uiSelected, closeRedeem, points, redeem } = useRewardsStore();
+  const [ticket,setTicket]=useState<RedemptionTicket|null>(null);
+  useEffect(()=>{ if(!uiOpen) setTicket(null); },[uiOpen]);
 
-  useEffect(() => { if (!open) setTicket(null); }, [open]);
-
-  const canRedeem = selected && points >= (selected?.points ?? Infinity);
+  const canRedeem = uiSelected ? points >= uiSelected.points : false;
 
   return (
     <AnimatePresence>
-      {open && selected && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] grid place-items-center bg-black/60"
-        >
+      {uiOpen && (
+        <motion.div className="fixed inset-0 z-[100] grid place-items-center bg-black/60"
+          initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
           <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            className={`w-[min(800px,92vw)] ${glass} rounded-2xl p-6`}
+            initial={{y:40,opacity:0}} animate={{y:0,opacity:1}} exit={{y:20,opacity:0}}
+            className="w-[min(800px,92vw)] backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6"
           >
             {!ticket ? (
               <>
                 <div className="flex items-center gap-4">
-                  <div className={`h-12 w-12 rounded-xl ${metallicGradCls(selected.tier)} shadow-inner`} />
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-700" />
                   <div>
-                    <h3 className="text-white text-lg font-semibold">{selected.title}</h3>
-                    <p className="text-white/60 text-sm">{selected.vendor}</p>
+                    <h3 className="text-white text-lg font-semibold">{uiSelected ? uiSelected.title : "Redeem Rewards"}</h3>
+                    <p className="text-white/60 text-sm">{uiSelected?.vendor ?? "Choose any available perk"}</p>
                   </div>
-                  <div className="ml-auto text-emerald-400 font-semibold">{fmtPts(selected.points)}</div>
+                  <div className="ml-auto text-emerald-400 font-semibold">{uiSelected ? `${uiSelected.points} pts` : ""}</div>
                 </div>
 
-                <div className="my-6 grid gap-2 text-sm text-white/70">
-                  <p>Confirm redemption. You'll receive a time-limited QR code to present at the vendor.</p>
-                  <p>Available balance will be reduced immediately.</p>
+                <div className="my-6 text-sm text-white/70">
+                  Confirm redemption. You'll receive a time-limited QR code to present at the vendor.
                 </div>
 
                 <SwipeToClaim
                   disabled={!canRedeem}
-                  onConfirm={() => {
-                    const t = redeem(selected);
-                    if (t) { setTicket(t); onRedeemed?.(t); }
+                  onConfirm={()=>{
+                    if(!uiSelected) return;
+                    const t=redeem(uiSelected);
+                    if(t) setTicket(t);
                   }}
                 />
 
                 <div className="mt-4 flex items-center justify-between text-xs text-white/50">
-                  <span>Balance: {fmtPts(points)}</span>
-                  {!canRedeem && <span className="text-rose-400">Not enough points</span>}
+                  <span>Balance: {points.toLocaleString()} pts</span>
+                  {!canRedeem && uiSelected && <span className="text-rose-400">Not enough points</span>}
                 </div>
 
                 <div className="mt-6 flex justify-end">
-                  <button onClick={onClose}
-                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white">
-                    Close
-                  </button>
+                  <button onClick={closeRedeem} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white">Close</button>
                 </div>
               </>
             ) : (
               <>
-                <div className="flex items-center gap-4">
-                  <div className={`h-12 w-12 rounded-xl ${metallicGradCls(selected.tier)}`} />
-                  <div>
-                    <h3 className="text-white text-lg font-semibold">Show this QR to redeem</h3>
-                    <p className="text-white/60 text-sm">{selected.title} — {selected.vendor}</p>
-                  </div>
-                  <div className="ml-auto text-emerald-400 font-semibold">Expires in 30 min</div>
-                </div>
-
+                <h3 className="text-white text-lg font-semibold mb-2">Show this QR to redeem</h3>
                 <div className="grid place-items-center py-6">
                   <div className="rounded-2xl p-4 bg-black/40 border border-white/10">
                     <QRCodeCanvas value={ticket.qrPayload} size={220} level="M" includeMargin />
                   </div>
                   <p className="mt-3 text-white/60 text-xs">
-                    Ticket: {ticket.ticketId} — {fmtPts(ticket.points)}
+                    Ticket: {ticket.ticketId} — {ticket.points} pts — Expires in 30 min
                   </p>
                 </div>
-
                 <div className="flex justify-end">
-                  <button onClick={onClose}
-                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white">
-                    Done
-                  </button>
+                  <button onClick={closeRedeem} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white">Done</button>
                 </div>
               </>
             )}
@@ -340,172 +184,8 @@ const RedeemModal: React.FC<{
   );
 };
 
-// ---------- Reward card
-const RewardCard: React.FC<{
-  reward: Reward;
-  onSelect: (r: Reward) => void;
-  disabled?: boolean;
-}> = ({ reward, onSelect, disabled }) => {
-  const tier = reward.tier;
-  return (
-    <motion.button
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      disabled={disabled}
-      onClick={() => onSelect(reward)}
-      className={`text-left rounded-2xl p-4 ${glass} ${metallicRing(tier)} transition
-        ${disabled ? "opacity-50 cursor-not-allowed" : "hover:ring-emerald-400/40"}`}
-    >
-      <div className={`h-10 w-full rounded-xl ${metallicGradCls(tier)} mb-3`} />
-      <div className="flex items-center gap-3">
-        <div>
-          <div className="text-white font-semibold">{reward.title}</div>
-          <div className="text-xs text-white/60">{reward.vendor}</div>
-        </div>
-        <div className="ml-auto text-emerald-400 font-semibold">{fmtPts(reward.points)}</div>
-      </div>
-      {reward.description && (
-        <div className="mt-2 text-xs text-white/60">{reward.description}</div>
-      )}
-    </motion.button>
-  );
-};
-
-// ---------- History row
-const HistoryRow: React.FC<{ t: RedemptionTicket }> = ({ t }) => {
-  const statusColor =
-    t.status === "active" ? "text-amber-300" :
-    t.status === "consumed" ? "text-emerald-400" : "text-rose-400";
-  return (
-    <div className="flex items-center gap-3 py-2 border-b border-white/5">
-      <div className="text-white/80 text-sm">{t.title}</div>
-      <div className="text-xs text-white/50">{t.vendor}</div>
-      <div className="ml-auto text-xs text-white/50">{dayjs(t.issuedAt).format("DD MMM, HH:mm")}</div>
-      <div className={`ml-4 text-xs ${statusColor}`}>{t.status}</div>
-    </div>
-  );
-};
-
-// ---------- Main Panel (section)
-export const RewardsPanel: React.FC = () => {
-  const { points, catalog, redemptions, expireTickets, consumeTicket } = useRewardsStore();
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Reward | null>(null);
-
-  // Expire tickets on mount + every 30s
-  useEffect(() => {
-    const run = () => expireTickets();
-    run();
-    const id = setInterval(run, 30000);
-    return () => clearInterval(id);
-  }, [expireTickets]);
-
-  const onSelect = (r: Reward) => { setSelected(r); setOpen(true); };
-
-  // Simulated vendor scan: click "Mark used" inside history (demo)
-  const [showHistory, setShowHistory] = useState(false);
-
-  // Tier header
-  const tierNow: Tier =
-    points >= 5000 ? "platinum" :
-    points >= 1500 ? "gold" :
-    points >= 500 ? "silver" : "bronze";
-
-  const nextTierTarget =
-    tierNow === "bronze" ? 500 :
-    tierNow === "silver" ? 1500 :
-    tierNow === "gold" ? 5000 : 5000;
-
-  const toNext = Math.max(0, nextTierTarget - points);
-
-  return (
-    <div className="relative grid gap-6">
-      {/* Header */}
-      <div className={`rounded-3xl p-6 ${glass}`}>
-        <div className="flex items-center gap-4">
-          <div className={`h-12 w-12 rounded-xl ${metallicGradCls(tierNow)}`} />
-          <div>
-            <div className="text-white/70 text-xs">Current Tier</div>
-            <div className="text-white font-semibold capitalize">{tierNow}</div>
-          </div>
-          <div className="ml-auto text-right">
-            <div className="text-white/70 text-xs">Points</div>
-            <div className="text-emerald-400 font-semibold">{points.toLocaleString()}</div>
-            <div className="text-white/50 text-xs">To next: {toNext.toLocaleString()} pts</div>
-          </div>
-        </div>
-        <div className="mt-4 h-2 rounded-full bg-white/10 overflow-hidden">
-          <motion.div
-            className="h-2 bg-emerald-400"
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(100, (points / nextTierTarget) * 100)}%` }}
-            transition={{ type: "spring", stiffness: 80, damping: 18 }}
-          />
-        </div>
-        <div className="mt-4 flex gap-3">
-          <button
-            onClick={() => { setSelected(null); setOpen(true); }}
-            className="px-4 py-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/30"
-          >
-            Redeem Rewards
-          </button>
-          <button
-            onClick={() => setShowHistory(v => !v)}
-            className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white"
-          >
-            {showHistory ? "Hide" : "View"} History
-          </button>
-        </div>
-      </div>
-
-      {/* Catalog */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {catalog.map((r) => (
-          <RewardCard
-            key={r.id}
-            reward={r}
-            onSelect={onSelect}
-            disabled={points < r.points}
-          />
-        ))}
-      </div>
-
-      {/* History */}
-      {showHistory && (
-        <div className={`rounded-3xl p-6 ${glass}`}>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-white font-semibold">Redemption History</h4>
-            <div className="text-xs text-white/50">Tap a ticket to mark "used" (demo)</div>
-          </div>
-          <div className="divide-y divide-white/5">
-            {redemptions.length === 0 && (
-              <div className="text-white/50 text-sm">No redemptions yet.</div>
-            )}
-            {redemptions.map((t) => (
-              <div key={t.ticketId} className="group">
-                <HistoryRow t={t} />
-                {t.status === "active" && (
-                  <div className="py-2 -mt-2">
-                    <button
-                      onClick={() => consumeTicket(t.ticketId)}
-                      className="px-3 py-1 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-xs"
-                    >
-                      Mark used (vendor scan)
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Modal */}
-      <RedeemModal
-        open={open}
-        onClose={() => setOpen(false)}
-        selected={selected ?? undefined}
-      />
-    </div>
-  );
+// Simple helper hook you can call from any button
+export const useRedeemUI = () => {
+  const openRedeem = useRewardsStore(s=>s.openRedeem);
+  return { openRedeem };
 };
