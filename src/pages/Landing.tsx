@@ -13,8 +13,9 @@ import TransactionsSection from "@/components/TransactionsSection";
 import SmartChallengesPro from "@/components/SmartChallengesPro";
 import RewardsPro from "@/components/RewardsPro";
 import PremiumSection from "@/components/PremiumSection";
-import { RewardsTierPanel } from "@/rewards/RewardsTierPanel";
-import { useRewardsStore } from "@/rewards/RewardsEngine";
+import RewardsModalNew from "@/components/rewards/RewardsModal";
+import RewardCard from "@/components/rewards/RewardCard";
+import { useRewardsStore } from "@/state/rewardsStore";
 
 /**
  * PRISM – Student Finances. Smarter. Rewarded.
@@ -104,8 +105,8 @@ export default function PrismLanding() {
   const [openRewards, setOpenRewards] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Sync points from RewardsEngine store
-  const setPoints = useRewardsStore(s => s.setPoints);
+  // Sync points from new rewards store
+  const { rewards, points, openRedeem, setPoints } = useRewardsStore();
   useEffect(() => { setPoints(POINTS); }, [setPoints]);
   
   // Scroll-based animations for hero
@@ -179,25 +180,25 @@ export default function PrismLanding() {
                 </Card>
                 <Card className="p-5 premium-shine concave-surface">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/50">Reward Points</div>
-                  <div className="mt-2 text-4xl font-bold tabular-nums">{POINTS.toLocaleString()}</div>
+                  <div className="mt-2 text-4xl font-bold tabular-nums">{points.toLocaleString()}</div>
                 </Card>
               </div>
 
-              <TierProgress points={POINTS} />
+              <TierProgress points={points} />
 
               <div className="flex flex-wrap items-center gap-3">
                 <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
                 <button onClick={handleUploadClick} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 font-semibold text-black shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transition-shadow">
                   <Upload className="size-4" /> Upload CSV
                 </button>
-                <button onClick={() => setOpenRewards(true)} className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
+                <button onClick={() => rewards.length > 0 && openRedeem(rewards[0])} className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/30 px-6 py-4 font-semibold text-emerald-300 hover:bg-emerald-500/10">
                   View Rewards <ArrowRight className="size-4" />
                 </button>
               </div>
             </div>
 
             {/* Right: 3D Pot */}
-            <SavingsPot3D balance={BALANCE} goal={5000} points={POINTS} />
+            <SavingsPot3D balance={BALANCE} goal={5000} points={points} />
           </div>
         </Section>
 
@@ -264,8 +265,8 @@ export default function PrismLanding() {
             billsPaid={50}
             paidOnTime={true}
             streakMonths={3}
-            points={POINTS}
-            onRedeem={() => setOpenRewards(true)}
+            points={points}
+            onRedeem={() => rewards.length > 0 && openRedeem(rewards[0])}
             config={{
               rentRate: 1,
               billsRate: 0.5,
@@ -289,7 +290,49 @@ export default function PrismLanding() {
         {/* REWARDS */}
         <PremiumSection theme="luxury">
           <Section id="rewards" headline="Redeem Rewards" subhead="Unlock exclusive perks with your points — swipe to claim with QR codes.">
-            <RewardsTierPanel />
+            <div className="space-y-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="rounded-2xl p-6 bg-gradient-to-br from-[#7a4b2b] to-[#bf8a5a] text-white">
+                  <h3 className="text-lg font-semibold mb-2">Bronze</h3>
+                  <p className="text-sm opacity-80 mb-4">100–499 pts</p>
+                  <ul className="text-sm space-y-1 opacity-90">
+                    <li>• Student discounts</li>
+                    <li>• Cashback vouchers</li>
+                  </ul>
+                </div>
+                
+                <div className="rounded-2xl p-6 bg-gradient-to-br from-[#585c68] to-[#b9c4cf] text-white">
+                  <h3 className="text-lg font-semibold mb-2">Silver</h3>
+                  <p className="text-sm opacity-80 mb-4">500–1,499 pts</p>
+                  <ul className="text-sm space-y-1 opacity-90">
+                    <li>• Cinema passes</li>
+                    <li>• Restaurant deals</li>
+                  </ul>
+                </div>
+                
+                <div className="rounded-2xl p-6 bg-gradient-to-br from-[#9a7a2f] to-[#f0d27a] text-white">
+                  <h3 className="text-lg font-semibold mb-2">Gold</h3>
+                  <p className="text-sm opacity-80 mb-4">1,500–4,999 pts</p>
+                  <ul className="text-sm space-y-1 opacity-90">
+                    <li>• Luxury experiences</li>
+                    <li>• Weekend getaways</li>
+                  </ul>
+                </div>
+                
+                <div className="rounded-2xl p-6 bg-gradient-to-br from-[#5b6a78] to-[#c0d8ee] text-white">
+                  <h3 className="text-lg font-semibold mb-2">Platinum</h3>
+                  <p className="text-sm opacity-80 mb-4">5,000+ pts</p>
+                  <ul className="text-sm space-y-1 opacity-90">
+                    <li>• Premium gyms</li>
+                    <li>• Designer rentals</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {rewards.map(r => <RewardCard key={r.id} reward={r} />)}
+              </div>
+            </div>
           </Section>
         </PremiumSection>
 
@@ -310,12 +353,14 @@ export default function PrismLanding() {
         <RewardsModal 
           open={openRewards} 
           onClose={() => setOpenRewards(false)} 
-          points={POINTS} 
+          points={points} 
           onRedeem={r => {
             console.log('Redeem', r.id);
             setOpenRewards(false);
           }} 
         />
+        
+        <RewardsModalNew />
       </div>
     </SmoothScroll>;
 }
