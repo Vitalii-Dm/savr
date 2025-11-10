@@ -1,6 +1,7 @@
 # **SAVR**
 
 > 💸 Presented at the **GreatUniHack 2025**
+> 🥈 2nd Place in the Housr x Accelerate ME Challenge
 
 ---
 
