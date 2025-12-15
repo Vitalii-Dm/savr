@@ -106,10 +106,5 @@
 
 ## 📁 Quick Reference
 
-- `src/components/sections/*` — Hero, Intelligence, Challenges, Rewards, 3D Savings Pot  
-- `src/contexts/*` — FinancialContext, ChallengeContext, RewardContext  
-- `financial_logic/analysis.py` — Core Python engine for preprocessing, trend analysis, pattern mining, anomaly detection, and suggestion building  
-- `financial_logic/utils.py` — Helper functions for normalization, scoring, and logging  
-- `mock_data/` — Sample transaction CSVs and fallback data for demo  
-
 SAVR delivers a premium, gamified student finance experience that blends **data intelligence, AI insights, and immersive visuals** — helping young adults save smarter while feeling rewarded. 💎  
+# SAVR
